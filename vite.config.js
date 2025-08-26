@@ -11,7 +11,7 @@ export default {
         short_name: 'HerVoice💞',
         description: 'Her Voice - Your music player PWA',
         start_url: '/',
-        display: 'standalone',          // Required for install prompt
+        display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#4caf50',
         icons: [
@@ -28,7 +28,8 @@ export default {
         ]
       },
       workbox: {
-        cleanupOutdatedCaches: true, // Auto-remove old caches
+        cleanupOutdatedCaches: true,                  // Auto-remove old caches
+        globPatterns: ['index.html', 'assets/**/*.{js,css,png,svg}'], // Only real files
         runtimeCaching: [
           {
             urlPattern: ({ request }) =>
