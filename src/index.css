@@ -70,7 +70,7 @@ body{
 .controler{
   margin: 10px;
   display: flex;
-  gap: 13px;
+  gap: 10px;
   transition: all ease-in-out 0.3s;
   justify-content: center;
   align-items: center;

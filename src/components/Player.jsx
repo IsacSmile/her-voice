@@ -1,6 +1,6 @@
 // src/components/Player.jsx
 import React, { useRef, useEffect } from "react";
-import "../index.css"; // import global styles
+import "../index.css";
 
 export default function Player({
   track,
@@ -13,10 +13,12 @@ export default function Player({
   onSeek,
   setDuration,
   setCurrentTime,
+  onLoop,        // ⬅ added
+  isLooping,     // ⬅ added
 }) {
   const audioRef = useRef(null);
 
-  // Play/pause audio
+  // Play/pause
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -40,9 +42,7 @@ export default function Player({
   const formatTime = (sec) => {
     if (isNaN(sec)) return "0:00";
     const minutes = Math.floor(sec / 60);
-    const seconds = Math.floor(sec % 60)
-      .toString()
-      .padStart(2, "0");
+    const seconds = Math.floor(sec % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
 
@@ -52,7 +52,12 @@ export default function Player({
         <span className="now-playing-title">Playing:</span> {track.name}
       </p>
 
-      <audio ref={audioRef} src={track.url} onEnded={onNext} />
+      <audio
+        ref={audioRef}
+        src={track.url}
+        onEnded={onNext}
+        loop={isLooping}   // ⬅ loop logic here
+      />
 
       <div className="progress-container" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
         <span>{formatTime(currentTime)}</span>
@@ -72,6 +77,14 @@ export default function Player({
         <button onClick={onPrev}>⏮️</button>
         <button onClick={togglePlay}>{isPlaying ? "⏸️" : "▶️"}</button>
         <button onClick={onNext}>⏭️</button>
+        <button
+  onClick={onLoop}
+  className={`loop-btn ${isLooping ? "active" : ""}`}
+  title="Toggle Loop"
+>
+  {isLooping ? "🔂" : "🔁"}
+</button>
+
       </div>
     </div>
   );

@@ -1,10 +1,11 @@
+// src/App.jsx
 import React, { useState, useCallback, useEffect } from "react";
 import "./index.css";
-import { defaultTracks } from "./data"; // Fixed: corrected import path
-import Header from "./components/Header.jsx";
-import Player from "./components/Player.jsx";
-import TrackList from "./components/TrackList.jsx";
-import ReloadPrompt from "./components/ReloadPrompt.jsx";
+import { defaultTracks } from "./data";
+import Header from "./components/Header";
+import Player from "./components/Player";
+import TrackList from "./components/TrackList";
+import ReloadPrompt from "./components/ReloadPrompt";
 import { getState } from "./utils/db";
 
 export default function App() {
@@ -15,8 +16,9 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isLooping, setIsLooping] = useState(false);
 
-  // restore from IndexedDB
+  // Restore last session state from IndexedDB
   useEffect(() => {
     async function restore() {
       const savedIndex = await getState("currentIndex");
@@ -30,28 +32,33 @@ export default function App() {
     restore();
   }, []);
 
-  // ----------------------
-  // Play controls
-  // ----------------------
+  // --- Playback Controls ---
   const playNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % queue.length);
+    setCurrentIndex((prev) =>
+      prev + 1 < queue.length ? prev + 1 : isLooping ? 0 : prev
+    );
     setIsPlaying(true);
-  }, [queue]);
+  }, [queue, isLooping]);
 
   const playPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + queue.length) % queue.length);
+    setCurrentIndex((prev) =>
+      prev - 1 >= 0 ? prev - 1 : isLooping ? queue.length - 1 : prev
+    );
     setIsPlaying(true);
-  }, [queue]);
+  }, [queue, isLooping]);
+
+  const toggleLoop = () => setIsLooping((prev) => !prev);
+
+  const togglePlay = () => setIsPlaying((prev) => !prev);
 
   const handleSeek = (e) => {
-    setCurrentTime(e.target.value);
+    const newTime = Number(e.target.value);
+    setCurrentTime(newTime);
     const audioEl = document.querySelector("audio");
-    if (audioEl) audioEl.currentTime = e.target.value;
+    if (audioEl) audioEl.currentTime = newTime;
   };
 
-  // ----------------------
-  // File upload
-  // ----------------------
+  // --- File Upload ---
   const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -87,12 +94,14 @@ export default function App() {
             isPlaying={isPlaying}
             onNext={playNext}
             onPrev={playPrev}
-            togglePlay={() => setIsPlaying((p) => !p)}
+            togglePlay={togglePlay}
             currentTime={currentTime}
             duration={duration}
             onSeek={handleSeek}
             setDuration={setDuration}
             setCurrentTime={setCurrentTime}
+            onLoop={toggleLoop}
+            isLooping={isLooping}
           />
         )}
 
@@ -106,7 +115,11 @@ export default function App() {
         />
       </div>
 
-      <ReloadPrompt currentIndex={currentIndex} queue={queue} isPlaying={isPlaying} />
+      <ReloadPrompt
+        currentIndex={currentIndex}
+        queue={queue}
+        isPlaying={isPlaying}
+      />
     </div>
   );
 }
