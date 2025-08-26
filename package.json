@@ -1,7 +1,7 @@
 {
-  "name": "my-app",
+  "name": "her-voice",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,29 +9,22 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "glob": "^11.0.3",
-    "idb": "^8.0.3",
-    "magic-string": "^0.30.18",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "workbox-build": "^7.3.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
+    "@vitejs/plugin-react": "^5.0.1",
+    "magic-string": "^0.26.0",
     "vite": "^7.1.3",
-    "vite-plugin-pwa": "^1.0.3"
+    "vite-plugin-pwa": "^1.0.3",
+    "workbox-build": "^7.3.0"
   },
   "overrides": {
-    "sourcemap-codec": "@jridgewell/sourcemap-codec",
-    "inflight": "^1.0.6",
-    "glob": "^11.0.3",
-    "source-map": "^0.7.4"
+    "magic-string": "^0.26.0",
+    "workbox-build": "^7.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import "./index.css";
-import { defaultTracks } from "../../my-app/src/data";
+import { defaultTracks } from "./data"; // Fixed: corrected import path
 import Header from "./components/Header.jsx";
 import Player from "./components/Player.jsx";
 import TrackList from "./components/TrackList.jsx";
