@@ -4,7 +4,10 @@ import "../index.css"; // global CSS
 import { saveState } from "../utils/db";
 
 export default function ReloadPrompt({ currentIndex, queue, isPlaying }) {
-  const { needRefresh, updateServiceWorker } = useRegisterSW({
+  const {
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
     onRegistered: (r) => console.log("SW registered:", r),
     onRegisterError: (err) => console.log("SW registration error:", err),
   });
@@ -14,12 +17,17 @@ export default function ReloadPrompt({ currentIndex, queue, isPlaying }) {
   if (!needRefresh || dismissed) return null;
 
   const handleUpdate = async () => {
-    // save current state
+    // Save current state before reloading
     await saveState("currentIndex", currentIndex);
     await saveState("queue", queue);
     await saveState("isPlaying", isPlaying);
 
     updateServiceWorker(true);
+  };
+
+  const handleLater = () => {
+    setDismissed(true);
+    setNeedRefresh(false);
   };
 
   return (
@@ -30,7 +38,7 @@ export default function ReloadPrompt({ currentIndex, queue, isPlaying }) {
           <button className="reload-btn" onClick={handleUpdate}>
             Update
           </button>
-          <button className="reload-later-btn" onClick={() => setDismissed(true)}>
+          <button className="reload-later-btn" onClick={handleLater}>
             Later
           </button>
         </div>
