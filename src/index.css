@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
-  html {
+html {
   scroll-behavior: smooth;
 }
 
@@ -9,8 +9,7 @@
   -webkit-overflow-scrolling: touch; /* iOS momentum */
 }
 
-
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -18,7 +17,7 @@
   font-family: Montserrat;
   transition: all ease-in-out 0.3s;
 }
-body{
+body {
   background-color: black;
 }
 
@@ -30,12 +29,11 @@ body{
 
 @media (min-width: 425px) and (max-width: 11142px) {
   .main-parent {
-    background-size: contain !important; 
+    background-size: contain !important;
   }
 }
 
-
-.tittle{
+.tittle {
   color: white;
 }
 
@@ -45,40 +43,39 @@ body{
   opacity: 0.6;
   height: 100vh;
 }
-.sub-container{
+.sub-container {
   max-width: 360px;
   padding: 0 1rem;
   display: block;
   margin: 0 auto;
 }
 
-
 .second_part {
   display: block;
   position: fixed;
   bottom: 1rem;
-  left: 50%;                     /* Push to the middle */
-  transform: translateX(-50%);   /* Pull back half of its width */
+  left: 50%; /* Push to the middle */
+  transform: translateX(-50%); /* Pull back half of its width */
   padding: 15px 12px;
   border-radius: 15px;
   backdrop-filter: blur(24px);
   box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
   width: 310px;
   color: white;
+  overflow: hidden;
 }
 
-.controler{
+.controler {
   margin: 10px;
   display: flex;
   gap: 10px;
   transition: all ease-in-out 0.3s;
   justify-content: center;
   align-items: center;
-  
 }
 
-.controler button{
-  padding: 5px 10px;
+.controler button {
+  padding: 7px 12px;
   border-radius: 50px;
   background: transparent;
   border: 1px solid #ffffff;
@@ -87,13 +84,12 @@ body{
   color: white;
 }
 
-.now-playing-main{
+.now-playing-main {
   font-size: 13px;
   font-weight: 500;
-
 }
 
-.now-playing-title{
+.now-playing-title {
   font-size: 13px;
   font-weight: 600;
 }
@@ -111,7 +107,6 @@ header {
   position: -webkit-sticky;
   position: sticky;
   top: 10px;
-  
 }
 
 header input[type="file"] {
@@ -120,21 +115,21 @@ header input[type="file"] {
   text-align: center;
   font-size: 10px;
   border: 1px solid rgb(204, 204, 204);
-    border-radius: 7px;
-    padding: 6px 10px;
-    cursor: pointer;
-    display: inline-block;
+  border-radius: 7px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-block;
 }
 
-ul{
+ul {
   margin-top: 20px;
 }
 
-#selected-track{
+#selected-track {
   font-size: 14px;
 }
 
-li{
+li {
   width: 90%;
 }
 
@@ -144,17 +139,46 @@ li{
   background-repeat: no-repeat;
   min-height: 100vh;
   background: url("./assets/images/gebli.jpg") no-repeat center center;
-  background-size: cover;    /* Makes it responsive */
+  background-size: cover; /* Makes it responsive */
   background-attachment: fixed; /* Keeps it fixed on scroll */
   opacity: 0.9;
 }
 
+/* Track list  */
+/* .track-list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+}
+
+.track-item {
+  cursor: pointer;
+  background: transparent;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 30px;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  font-weight: 600;
+  text-overflow: ellipsis; 
+}
+
+.track-item.active {
+  background: #fff;
+  color: #000;
+}
+
+.track-name{
+    max-width: 250px;
+
+} */
 
 /* Track list  */
 .track-list {
   list-style: none;
-  padding: 0;
-  margin: 2rem 0;
+  padding: 0 0 10rem 0;
+  margin: 2rem 0 0 0;
 }
 
 .track-item {
@@ -174,10 +198,16 @@ li{
   color: #000;
 }
 
+.track-name {
+  display: inline-block;
+  max-width: 250px; /* adjust width as needed */
+  white-space: nowrap; /* prevent wrapping */
+  overflow: hidden; /* hide overflow */
+  text-overflow: ellipsis; /* add ... at the end */
+  vertical-align: middle;
+}
 
 /* ----------------- Reload Prompt ----------------- */
-
-
 
 /* ReloadPrompt overlay */
 .reload-overlay {
@@ -187,7 +217,7 @@ li{
   width: 100%;
   height: 100%;
   backdrop-filter: blur(5px);
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -202,7 +232,7 @@ li{
   /* width: 90%; */
   max-width: 500px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .reload-text {
@@ -228,4 +258,43 @@ li{
 .reload-later-btn {
   background: #777;
   color: #fff;
+}
+
+/* urrently playing track name (track.name) to scroll infinitely 
+like a marquee instead of cutting with .... */
+/* Marquee effect */
+.now-playing-main {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 280px;
+  overflow: hidden;
+}
+
+.now-playing-label {
+  flex-shrink: 0; /* keeps "Playing:" fixed */
+  font-weight: 600;
+}
+
+.marquee {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.marquee span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }

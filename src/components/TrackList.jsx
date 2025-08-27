@@ -1,19 +1,18 @@
 import React from "react";
-import { truncateName } from "../utils/format";
-import "../index.css"; // ✅ import global CSS
 
 export default function TrackList({ tracks, currentIndex, onPlayTrack }) {
   return (
-    <ul className="track-list">
-      {tracks.map((t, i) => (
-        <li
-          key={t.name}
+    <div className="track-list">
+      {tracks.map((track, i) => (
+        <div
+          key={track.name}
           className={`track-item ${i === currentIndex ? "active" : ""}`}
           onClick={() => onPlayTrack(i)}
+          title={track.name} // tooltip shows full name on hover
         >
-          {truncateName(t.name)}
-        </li>
+          <span className="track-name">{track.name}</span>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

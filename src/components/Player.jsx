@@ -1,4 +1,3 @@
-// src/components/Player.jsx
 import React, { useRef, useEffect } from "react";
 import "../index.css";
 
@@ -13,8 +12,8 @@ export default function Player({
   onSeek,
   setDuration,
   setCurrentTime,
-  onLoop,        // ⬅ added
-  isLooping,     // ⬅ added
+  onLoop,
+  isLooping,
 }) {
   const audioRef = useRef(null);
 
@@ -22,7 +21,8 @@ export default function Player({
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (isPlaying) audio.play().catch(() => console.log("User interaction required"));
+
+    if (isPlaying) audio.play().catch(() => console.log("brother brother User interaction required"));
     else audio.pause();
   }, [isPlaying, track]);
 
@@ -32,11 +32,15 @@ export default function Player({
     if (!audio) return;
 
     const updateTime = () => setCurrentTime(audio.currentTime);
+    const setMeta = () => setDuration(audio.duration);
 
     audio.addEventListener("timeupdate", updateTime);
-    audio.addEventListener("loadedmetadata", () => setDuration(audio.duration));
+    audio.addEventListener("loadedmetadata", setMeta);
 
-    return () => audio.removeEventListener("timeupdate", updateTime);
+    return () => {
+      audio.removeEventListener("timeupdate", updateTime);
+      audio.removeEventListener("loadedmetadata", setMeta);
+    };
   }, [track, setCurrentTime, setDuration]);
 
   const formatTime = (sec) => {
@@ -46,20 +50,25 @@ export default function Player({
     return `${minutes}:${seconds}`;
   };
 
+  const src = track.url instanceof Blob ? URL.createObjectURL(track.url) : track.url;
+
   return (
     <div className="second_part">
-      <p className="now-playing-main">
-        <span className="now-playing-title">Playing:</span> {track.name}
-      </p>
+      {/* Fixed "Playing:" + scrolling track name */}
+      <div className="now-playing-main">
+        <span className="now-playing-label">Playing: </span>
+        <div className="marquee">
+          <span>{track?.name || "No Track"}</span>
+        </div>
+      </div>
 
-      <audio
-        ref={audioRef}
-        src={track.url}
-        onEnded={onNext}
-        loop={isLooping}   // ⬅ loop logic here
-      />
+      <audio ref={audioRef} src={src} onEnded={onNext} loop={isLooping} />
 
-      <div className="progress-container" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}>
+      {/* Progress bar */}
+      <div
+        className="progress-container"
+        style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}
+      >
         <span>{formatTime(currentTime)}</span>
         <input
           className="range"
@@ -73,18 +82,18 @@ export default function Player({
         <span>{formatTime(duration)}</span>
       </div>
 
+      {/* Controls */}
       <div className="controler" style={{ marginTop: 10 }}>
         <button onClick={onPrev}>⏮️</button>
         <button onClick={togglePlay}>{isPlaying ? "⏸️" : "▶️"}</button>
         <button onClick={onNext}>⏭️</button>
         <button
-  onClick={onLoop}
-  className={`loop-btn ${isLooping ? "active" : ""}`}
-  title="Toggle Loop"
->
-  {isLooping ? "🔂" : "🔁"}
-</button>
-
+          onClick={onLoop}
+          className={`loop-btn ${isLooping ? "active" : ""}`}
+          title="Toggle Loop"
+        >
+          {isLooping ? "🔂" : "🔁"}
+        </button>
       </div>
     </div>
   );

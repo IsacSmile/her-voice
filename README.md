@@ -16,9 +16,18 @@ A music player web app built with **React**, powered by **Vite** for lightning-f
 
 ## 📂 Project Structure
 my-app/
-├── public/ # Static files (favicon, manifest.json, sw.js if needed)
+├── public/ Music Tracks 
 ├── src/
-│ ├── assets/ # Music tracks & images
+│ ├── assets/ icons
+| |────  assest / images
+│ ├── components
+│ ├── components / controls.jsx
+│ ├── components / Header.jsx
+│ ├── components / Player.jsx
+│ ├── components / ProgressBar.jsx
+│ ├── components / TrackList.jsx
+│ ├── utils / db.js
+│ ├── utils / format.js
 │ ├── data.js # Track list
 │ ├── App.jsx # Main app component
 │ ├── main.jsx # Entry point
