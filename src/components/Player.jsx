@@ -22,7 +22,7 @@ export default function Player({
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isPlaying) audio.play().catch(() => console.log("brother brother User interaction required"));
+    if (isPlaying) audio.play().catch(() => console.log("User interaction required"));
     else audio.pause();
   }, [isPlaying, track]);
 
@@ -52,6 +52,18 @@ export default function Player({
 
   const src = track.url instanceof Blob ? URL.createObjectURL(track.url) : track.url;
 
+  // Heart progress calculation
+  const progress = duration ? (currentTime / duration) * 100 : 0;
+
+  const handleSeek = (e) => {
+    const bbox = e.target.getBoundingClientRect();
+    const clickX = e.clientX - bbox.left;
+    const percent = Math.min(Math.max(clickX / bbox.width, 0), 1);
+    const newTime = percent * duration;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
   return (
     <div className="second_part">
       {/* Fixed "Playing:" + scrolling track name */}
@@ -64,23 +76,50 @@ export default function Player({
 
       <audio ref={audioRef} src={src} onEnded={onNext} loop={isLooping} />
 
-      {/* Progress bar */}
-      <div
-        className="progress-container"
-        style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}
-      >
-        <span>{formatTime(currentTime)}</span>
-        <input
-          className="range"
-          type="range"
-          min="0"
-          max={duration}
-          value={currentTime}
-          onChange={onSeek}
-          style={{ flex: 1 }}
-        />
-        <span>{formatTime(duration)}</span>
-      </div>
+      {/* Heart-shaped Progress */}
+<div className="heart-progress-wrapper">
+  <span>{formatTime(currentTime)}</span>
+  <svg
+    viewBox="0 0 100 100"
+    className="heart-progress"
+    onClick={handleSeek}
+  >
+    {/* Background Path (soft glowing white outline) */}
+    <path
+      d="M10,30 
+         A20,20 0,0,1 50,30 
+         A20,20 0,0,1 90,30 
+         Q90,60 50,90 
+         Q10,60 10,30 Z"
+      fill="none"
+      stroke="rgba(255,255,255,0.9)"  // more white
+      strokeWidth="9"
+      style={{
+        filter: "drop-shadow(0px 0px 6px rgba(255,255,255,0.8))"
+      }}
+    />
+    {/* Progress Path (smooth soft red) */}
+    <path
+      d="M10,30 
+         A20,20 0,0,1 50,30 
+         A20,20 0,0,1 90,30 
+         Q90,60 50,90 
+         Q10,60 10,30 Z"
+      fill="none"
+      stroke="#ff3b5c"
+      strokeWidth="9"
+      strokeDasharray="250"
+      strokeDashoffset={250 - (progress / 100) * 250}
+      strokeLinecap="round"
+      style={{
+        transition: "stroke-dashoffset 0.4s ease",
+        filter: "drop-shadow(0px 0px 4px rgba(255,59,92,0.7))"
+      }}
+    />
+  </svg>
+  <span>{formatTime(duration)}</span>
+</div>
+
 
       {/* Controls */}
       <div className="controler" style={{ marginTop: 10 }}>

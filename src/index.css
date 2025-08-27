@@ -24,10 +24,10 @@ body {
 .main-parent {
   margin: 0 auto;
   display: block;
-  max-width: 425px;
+  max-width: 430px;
 }
 
-@media (min-width: 425px) and (max-width: 11142px) {
+@media (min-width: 430px) and (max-width: 11142px) {
   .main-parent {
     background-size: contain !important;
   }
@@ -63,6 +63,7 @@ body {
   width: 310px;
   color: white;
   overflow: hidden;
+  z-index: 9999;
 }
 
 .controler {
@@ -107,6 +108,7 @@ header {
   position: -webkit-sticky;
   position: sticky;
   top: 10px;
+  z-index: 9999;
 }
 
 header input[type="file"] {
@@ -145,62 +147,15 @@ li {
 }
 
 /* Track list  */
-/* .track-list {
-  list-style: none;
-  padding: 0;
-  margin: 2rem 0;
-}
-
-.track-item {
-  cursor: pointer;
-  background: transparent;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 30px;
-  margin-bottom: 5px;
-  transition: all 0.3s ease;
-  font-size: 15px;
-  font-weight: 600;
-  text-overflow: ellipsis; 
-}
-
-.track-item.active {
-  background: #fff;
-  color: #000;
-}
-
-.track-name{
-    max-width: 250px;
-
-} */
-
-/* Track list  */
 .track-list {
   list-style: none;
   padding: 0 0 10rem 0;
   margin: 2rem 0 0 0;
 }
 
-.track-item {
-  cursor: pointer;
-  background: transparent;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 30px;
-  margin-bottom: 5px;
-  transition: all 0.3s ease;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.track-item.active {
-  background: #fff;
-  color: #000;
-}
-
 .track-name {
   display: inline-block;
-  max-width: 250px; /* adjust width as needed */
+  max-width: 270px; /* adjust width as needed */
   white-space: nowrap; /* prevent wrapping */
   overflow: hidden; /* hide overflow */
   text-overflow: ellipsis; /* add ... at the end */
@@ -297,4 +252,179 @@ like a marquee instead of cutting with .... */
   100% {
     transform: translateX(-100%);
   }
+}
+
+/* Three dots button after every track */
+/* Three dots button after every track */
+
+
+.track-item-list {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 10px;
+  transition: background 0.3s;
+  padding: 0 12px;
+}
+
+.track-item-list.active {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.12),
+    -2px -2px 6px rgba(255, 255, 255, 0.35);
+  color: #000;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+.track-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  color: #fff;
+}
+
+/* Dots button */
+.dots-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+.dots-btn span {
+  display: block;
+  width: 4px;
+  height: 4px;
+  background: #bbb;
+  border-radius: 50%;
+  margin: 2px 0;
+  transition: background 0.3s ease;
+}
+
+.dots-btn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.overlay.closing {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Bottom sheet */
+.bottom-sheet {
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease forwards;
+  max-width: 400px;
+  width: 100%;
+}
+
+.bottom-sheet.closing {
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideDown {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(100%); opacity: 0; }
+}
+
+.sheet-title {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.sheet-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sheet-content button {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  color: white;
+  text-align: left;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sheet-content button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.close-btn {
+  background: rgba(255, 0, 0, 0.15) !important;
+  color: #ff4d4d !important;
+  font-weight: bold;
+  text-align: center !important;
+}
+
+/* heart shaped progress bar */
+.heart-progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 0 0;
+  justify-content: center;
+}
+
+.heart-progress {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.heart-progress path {
+  transition: stroke-dashoffset 0.3s ease;
 }

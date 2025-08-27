@@ -14,11 +14,11 @@ export default function Header({ onFiles, message, onDeleteTrack, onClearAll }) 
         className="file-input"
       />
 
-      {/* <div style={{ marginTop: 10 }}>
+      <div style={{ marginTop: 10 }}>
         <button onClick={onClearAll} style={{ padding: "5px 10px", borderRadius: "7px" }}>
           Clear All
         </button>
-      </div> */}
+      </div>
 
       {message && <p className="status-msg">{message}</p>}
     </header>

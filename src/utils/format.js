@@ -6,4 +6,4 @@ export const formatTime = (sec) => {
 };
 
 export const truncateName = (name) =>
-  name.length > 25 ? name.slice(0, 25) + "..." : name;
+  name.length > 25 ? name.slice(0, 30) + "..." : name;
