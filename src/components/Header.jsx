@@ -6,7 +6,7 @@ import "../index.css";
 export default function Header({ onFiles, message }) {
   return (
     <header className="app-header">
-      <h2 className="tittle">Her_Voicee 💞</h2>
+      <h2 className="tittle">Her_Voice 💞</h2>
 
       {/* The original input is now hidden via CSS. We add an 'id' to link it to the label. */}
       <input
