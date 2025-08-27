@@ -1,4 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Foundation:wght@400..700&display=swap");
+
+.text-progress text {
+  font-family: "Edu NSW ACT Hand Cursive", cursive;
+}
 
 html {
   scroll-behavior: smooth;
@@ -123,8 +128,32 @@ header input[type="file"] {
   display: inline-block;
 }
 
-ul {
-  margin-top: 20px;
+/* Add this to your src/index.css file */
+
+/* This hides the default browser input */
+.file-input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+/* This styles our new custom button */
+.custom-file-upload {
+  display: inline-block;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: white;
+  border: 1px solid;
+  border-radius: 8px;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out;
+  margin: 0.6rem 0 0 0;
+  font-weight: 600;
+  font-size: 14px;
+
 }
 
 #selected-track {
@@ -149,7 +178,7 @@ li {
 /* Track list  */
 .track-list {
   list-style: none;
-  padding: 0 0 10rem 0;
+  padding: 0 0 12rem 0;
   margin: 2rem 0 0 0;
 }
 
@@ -180,11 +209,9 @@ li {
 }
 
 .reload-prompt {
-  /* background: #333; */
   color: #fff;
   padding: 2rem;
   border-radius: 15px;
-  /* width: 90%; */
   max-width: 500px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -257,7 +284,6 @@ like a marquee instead of cutting with .... */
 /* Three dots button after every track */
 /* Three dots button after every track */
 
-
 .track-item-list {
   cursor: pointer;
   display: flex;
@@ -266,8 +292,11 @@ like a marquee instead of cutting with .... */
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.1);
   margin-bottom: 10px;
-  transition: background 0.3s;
   padding: 0 12px;
+  /* ADD a transparent border to reserve space */
+  border: 1px solid transparent;
+  /* UPDATE the transition to animate the border color smoothly */
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .track-item-list.active {
@@ -278,7 +307,6 @@ like a marquee instead of cutting with .... */
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.12),
     -2px -2px 6px rgba(255, 255, 255, 0.35);
-  color: #000;
   font-weight: 600;
   transition: all 0.3s ease-in-out;
 }
@@ -340,12 +368,20 @@ like a marquee instead of cutting with .... */
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 /* Bottom sheet */
@@ -365,12 +401,24 @@ like a marquee instead of cutting with .... */
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 @keyframes slideDown {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(100%); opacity: 0; }
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 
 .sheet-title {
@@ -410,7 +458,12 @@ like a marquee instead of cutting with .... */
   text-align: center !important;
 }
 
-/* heart shaped progress bar */
+/* heart shaped progress bar if used  */
+.progress-time{
+  font-weight: 700;
+  font-size: 16px;
+}
+/* heart shaped progress bar if used  */
 .heart-progress-wrapper {
   display: flex;
   align-items: center;
@@ -424,7 +477,44 @@ like a marquee instead of cutting with .... */
   height: 40px;
   cursor: pointer;
 }
-
-.heart-progress path {
+s .heart-progress path {
   transition: stroke-dashoffset 0.3s ease;
 }
+/* heart shaped progress bar if used  */
+/* heart shaped progress bar if used  */
+
+/* styling deleted alert  */
+/* styling deleted alert  */
+.status-msg {
+  padding: 5px 16px;
+  border-radius: 6px;
+  font-weight: 400;
+  margin-top: 15px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Style for when a file is added */
+.status-msg.success {
+  color: #ffff;
+  font-weight: 600;
+}
+
+/* Style for when a file is deleted */
+.status-msg.delete {
+  color: #ffff; 
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* styling deleted alert  */
+/* styling deleted alert  */
