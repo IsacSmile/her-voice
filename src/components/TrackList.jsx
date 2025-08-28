@@ -1,61 +1,58 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function TrackList({ tracks, currentIndex, onPlayTrack, onDeleteTrack }) {
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [closing, setClosing] = useState(false);
-  const [selectedTrackIndex, setSelectedTrackIndex] = useState(null);
-
-  const openSheet = (e, index) => {
-    e.stopPropagation();
-    setSelectedTrackIndex(index);
-    setClosing(false);
-    setSheetOpen(true);
-  };
-
-  const closeSheet = () => {
-    setClosing(true);
-    setTimeout(() => {
-      setSheetOpen(false);
-      setSelectedTrackIndex(null);
-    }, 300);
-  };
-
-  const handleDeleteClick = () => {
-    if (selectedTrackIndex !== null) {
-      onDeleteTrack(selectedTrackIndex);
+export default function TrackList({
+  tracks,
+  currentIndex,
+  onPlayTrack,
+  isSelectMode,
+  selectedTracks,
+  onSelectTrack,
+  onOpenSheet // New prop to open the bottom sheet
+}) {
+  
+  const handleClick = (track, index) => {
+    if (isSelectMode) {
+      onSelectTrack(track.id);
+    } else {
+      onPlayTrack(index);
     }
-    closeSheet();
   };
 
   return (
     <div className="track-list">
-      {tracks.map((track, i) => (
-        <div
-          key={track.id || track.name + i} // Use track.id if available, fallback for default tracks
-          className={`track-item-list ${i === currentIndex ? "active" : ""}`}
-          onClick={() => onPlayTrack(i)}
-        >
-          <span className="track-name">{track.name}</span>
-          <button className="dots-btn" onClick={(e) => openSheet(e, i)}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </div>
-      ))}
-
-      {sheetOpen && (
-        <div className={`overlay ${closing ? "closing" : "open"}`} onClick={closeSheet}>
-          <div className={`bottom-sheet ${closing ? "closing" : "open"}`} onClick={(e) => e.stopPropagation()}>
-            <div className="sheet-content">
-              <div className="sheet-title">Track Options</div>
-              <button>ℹ️ Info (Feature on the way!)</button>
-              <button onClick={handleDeleteClick}>🗑️ Delete</button>
-              <button className="close-btn" onClick={closeSheet}>Close</button>
-            </div>
+      {tracks.map((track, i) => {
+        const isSelected = selectedTracks.includes(track.id);
+        return (
+          <div
+            key={track.id || track.name + i}
+            className={`
+              track-item-list 
+              ${i === currentIndex && !isSelectMode ? "active" : ""}
+              ${isSelectMode ? "selectable" : ""}
+              ${isSelected ? "selected" : ""}
+            `}
+            onClick={() => handleClick(track, i)}
+          >
+            {isSelectMode && (
+              <div className="checkbox">
+                {isSelected && <div className="checkmark">✔</div>}
+              </div>
+            )}
+            <span className="track-name">{track.name}</span>
+            {/* Show dots button only when not in select mode */}
+            {!isSelectMode && (
+              <button className="dots-btn" onClick={(e) => {
+                  e.stopPropagation(); // Prevent track from playing
+                  onOpenSheet(track);
+                }}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            )}
           </div>
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 }
