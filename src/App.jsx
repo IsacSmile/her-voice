@@ -47,6 +47,8 @@ export default function App() {
   const [isCreatePlaylistModalOpen, setIsCreatePlaylistModalOpen] = useState(false);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
 
+  const [isRestored, setIsRestored] = useState(false);
+
   // Restore saved state once on startup and validate IDs
   useEffect(() => {
     async function restore() {
@@ -101,21 +103,23 @@ export default function App() {
         setWishlist([]);
         setRecentlyPlayed([]);
         setPlaylists([]);
+      } finally {
+        setIsRestored(true);
       }
     }
     restore();
   }, []);
 
   // Persist small pieces of state when they update
-  useEffect(() => { saveState("currentIndex", currentIndex); }, [currentIndex]);
-  useEffect(() => { saveState("isPlaying", isPlaying); }, [isPlaying]);
+  useEffect(() => { if (isRestored) saveState("currentIndex", currentIndex); }, [currentIndex, isRestored]);
+  useEffect(() => { if (isRestored) saveState("isPlaying", isPlaying); }, [isPlaying, isRestored]);
 
   // Persist favorites, wishlist, recentlyPlayed into IndexedDB
-  useEffect(() => { saveFavorites(favorites); }, [favorites]);
-  useEffect(() => { saveWishlist(wishlist); }, [wishlist]);
-  useEffect(() => { saveRecentlyPlayed(recentlyPlayed); }, [recentlyPlayed]);
+  useEffect(() => { if (isRestored) saveFavorites(favorites); }, [favorites, isRestored]);
+  useEffect(() => { if (isRestored) saveWishlist(wishlist); }, [wishlist, isRestored]);
+  useEffect(() => { if (isRestored) saveRecentlyPlayed(recentlyPlayed); }, [recentlyPlayed, isRestored]);
 
-  useEffect(() => { saveState('playlists', playlists); }, [playlists]);
+  useEffect(() => { if (isRestored) saveState('playlists', playlists); }, [playlists, isRestored]);
 
   useEffect(() => {
     if (isPlaying && currentIndex > -1 && queue[currentIndex]) {
