@@ -48,9 +48,33 @@ export default function App() {
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
 
   const [isRestored, setIsRestored] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
 
-  // Restore saved state once on startup and validate IDs
+  // This new useEffect handles the final animation and removal of the loader
   useEffect(() => {
+    // Only run this logic after the initial data restoration is complete
+    if (isRestored) {
+      const loaderContainer = document.getElementById('initial-loader-container');
+      const loaderText = document.querySelector('.loader-text');
+
+      if (loaderContainer && loaderText) {
+        // 1. Add the 'loaded' class to trigger the final 10% fill animation
+        loaderText.classList.add('loaded');
+
+        // 2. Wait for that animation to finish (0.4s) before starting the fade-out
+        setTimeout(() => {
+          loaderContainer.style.opacity = '0';
+          // 3. Remove the element from the DOM after the fade-out transition (0.5s)
+          setTimeout(() => loaderContainer.remove(), 500);
+        }, 400); // This delay must match your "text-fill-complete" animation duration
+      }
+    }
+  }, [isRestored]); // This effect is dependent on the isRestored state
+
+  // Restore saved state once on startup
+  useEffect(() => {
+    const startTime = Date.now(); // Record start time
+
     async function restore() {
       try {
         const deletedIds = JSON.parse(localStorage.getItem(DELETED_DEFAULTS_KEY)) || [];
@@ -104,11 +128,23 @@ export default function App() {
         setRecentlyPlayed([]);
         setPlaylists([]);
       } finally {
+        const endTime = Date.now(); // Record end time
+        const loadTime = (endTime - startTime) / 1000; // Calculate duration in seconds
+
+        // Find the loader text element and set the dynamic animation duration
+        const loaderText = document.querySelector('.loader-text');
+        if (loaderText) {
+          // Ensure a minimum animation time for a good user experience
+          const animationTime = Math.max(loadTime, 1.5); // e.g., minimum of 1.5 seconds
+          loaderText.style.setProperty('--animation-duration', `${animationTime}s`);
+        }
+        
+        // This is the crucial part: it sets isRestored to true after everything is done
         setIsRestored(true);
       }
     }
     restore();
-  }, []);
+  }, []); // The empty dependency array ensures this runs only once on mount
 
   // Persist small pieces of state when they update
   useEffect(() => { if (isRestored) saveState("currentIndex", currentIndex); }, [currentIndex, isRestored]);
@@ -322,6 +358,8 @@ export default function App() {
             setDuration={setDuration}
             onLoop={toggleLoop}
             isLooping={isLooping}
+            isBuffering={isBuffering}
+            setIsBuffering={setIsBuffering}
           />
         )}
         <TrackList

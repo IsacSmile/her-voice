@@ -2,14 +2,88 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./src/assets/icons/favicon_io/apple-touch-icon.png" />
     <title>Her Voice 💞</title>
     <meta name="description" content="web apps for affuu">
-<link rel="icon" href="./src/assets/icons/favicon_io/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      #initial-loader-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #1a1a1a;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+
+      .loader-text {
+        --animation-duration: 3s; /* Default fallback duration */
+        font-size: 2rem;
+        font-weight: bold;
+        font-family: 'Bimbo Pro', cursive, sans-serif;
+        position: relative;
+        color: #fff;
+      }
+
+      .loader-text::before {
+        content: 'HerVoice';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(90deg, #ff3b5c, #ff7e5f, #feb47b, #86A8E7, #36D1DC, #5B86E5);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: text-fill-loading var(--animation-duration) ease-out forwards;
+      }
+      
+      @keyframes text-fill-loading {
+        from {
+          width: 0%;
+        }
+        to {
+          width: 90%;
+        }
+      }
+
+      .loader-text.loaded::before {
+        animation: text-fill-complete 0.4s ease-in-out forwards;
+      }
+
+      @keyframes text-fill-complete {
+        from {
+          width: 90%;
+        }
+        to {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="initial-loader-container">
+      <h1 class="loader-text">HerVoice</h1>
+    </div>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

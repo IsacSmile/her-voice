@@ -1,6 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import "../index.css";
 
+const Loader = () => (
+  <div className="loader-container">
+    <div className="loader"></div>
+  </div>
+);
+
 export default function Player({
   track,
   isPlaying,
@@ -13,6 +19,8 @@ export default function Player({
   setDuration,
   onLoop,
   isLooping,
+  isBuffering,
+  setIsBuffering,
 }) {
   const audioRef = useRef(null);
 
@@ -33,15 +41,23 @@ export default function Player({
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const setMeta = () => setDuration(audio.duration || 0);
+    const handleWaiting = () => setIsBuffering(true);
+    const handlePlaying = () => setIsBuffering(false);
+
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", setMeta);
+    audio.addEventListener("waiting", handleWaiting);
+    audio.addEventListener("playing", handlePlaying);
+
 
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", setMeta);
+      audio.removeEventListener("waiting", handleWaiting);
+      audio.removeEventListener("playing", handlePlaying);
     };
-  }, [track, setCurrentTime, setDuration]);
+  }, [track, setCurrentTime, setDuration, setIsBuffering]);
 
   const formatTime = (sec) => {
     if (isNaN(sec) || sec === 0) return "0:00";
@@ -54,8 +70,8 @@ export default function Player({
     track?.url instanceof Blob
       ? URL.createObjectURL(track.url)
       : typeof track?.url === "string"
-      ? track.url
-      : "";
+        ? track.url
+        : "";
 
   const progress = duration ? (currentTime / duration) * 100 : 0;
 
@@ -72,6 +88,7 @@ export default function Player({
 
   return (
     <div className="second_part">
+      {isBuffering && <Loader />}
       <div className="now-playing-main">
         <span className="now-playing-label">Playing: </span>
         <div className="marquee">
