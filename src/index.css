@@ -15,6 +15,10 @@ html {
 }
 
 body {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-user-select: none;
+  user-select: none;
   background-color: black;
 }
 
@@ -28,6 +32,12 @@ body {
   background-size: cover;
   background-attachment: fixed;
   opacity: 0.9;
+}
+
+@media (min-width: 600px) {
+  .main-parent {
+    background-size: contain;
+  }
 }
 
 .sub-container {
@@ -300,8 +310,12 @@ body {
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 /* --- Track List --- */
@@ -432,23 +446,41 @@ body {
 
 /* --- Animations --- */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes slideInLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideOutLeft {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }
 
 /* --- Bottom Sheet Menu --- */
@@ -486,17 +518,21 @@ body {
   animation: slideUp 0.3s ease forwards;
 }
 
-/* ADDED this class for the slide down effect */
 .bottom-sheet.closing {
   animation: slideDown 0.3s ease forwards;
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-/* ADDED the slideDown keyframes */
 @keyframes slideDown {
   from {
     transform: translateY(0);
@@ -556,4 +592,94 @@ body {
   background: rgba(255, 255, 255, 0.1);
   text-align: center;
   font-weight: bold;
+}
+
+/* --- Create Playlist Modal --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10002;
+  /* Higher than side menu overlay */
+}
+
+.modal-content {
+  background: #2c2c2c;
+  padding: 25px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 320px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.playlist-name-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #1e1e1e;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-button.cancel {
+  background-color: #555;
+  color: white;
+}
+
+.modal-button.create {
+  background-color: #1DB954;
+  /* Spotify green */
+  color: white;
+}
+
+/* --- Side Menu Playlist Section --- */
+.playlist-section {
+  margin-top: 20px;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+.playlist-title {
+  padding: 10px;
+  color: #888;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.menu-item.create-playlist {
+  color: #1DB954;
+  font-weight: bold;
+}
+
+.menu-item.playlist-item {
+  padding-left: 25px;
+  /* Indent playlist items */
+  font-style: italic;
+  color: #ccc;
 }

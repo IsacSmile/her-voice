@@ -12,25 +12,33 @@ export default function Header({
   onSelectAll,
   selectedCount,
   isSearchVisible,
-  setIsSearchVisible
+  setIsSearchVisible,
+  currentView,
 }) {
   const searchInputRef = useRef(null);
 
   useEffect(() => {
-    // Automatically focus the input when it becomes visible
     if (isSearchVisible) {
       searchInputRef.current?.focus();
     }
   }, [isSearchVisible]);
 
+  const getTitle = (view) => {
+    switch(view) {
+      case 'favorites': return 'Favorites';
+      case 'wishlist': return 'Wishlist';
+      case 'recent': return 'Recently Played';
+      default: return 'Her_Voicee 💞';
+    }
+  };
+
   return (
     <header className="app-header">
       <div className="header-top-row">
         <button onClick={onMenuClick} className="hamburger-btn">☰</button>
-        <h2 className="tittle">Her_Voicee 💞</h2>
+        <h2 className="tittle">{getTitle(currentView)}</h2>
         <button onClick={() => setIsSearchVisible(true)} className="search-icon-btn">🔍</button>
 
-        {/* This is the search bar that overlaps */}
         <div className={`search-overlay ${isSearchVisible ? 'visible' : ''}`}>
           <input
             ref={searchInputRef}
@@ -46,26 +54,14 @@ export default function Header({
 
       {isSelectMode && (
         <div className="selection-controls">
-          <button onClick={onSelectAll} className="control-button">
-            Select All
-          </button>
-          <button
-            onClick={onDeleteSelected}
-            className="control-button delete"
-            disabled={selectedCount === 0}
-          >
-            Delete ({selectedCount})
-          </button>
-          <button onClick={toggleSelectMode} className="control-button cancel">
-            Cancel
-          </button>
+          <button onClick={onSelectAll} className="control-button">Select All</button>
+          <button onClick={onDeleteSelected} className="control-button delete" disabled={selectedCount === 0}>Delete ({selectedCount})</button>
+          <button onClick={toggleSelectMode} className="control-button cancel">Cancel</button>
         </div>
       )}
 
       {message && (
-        <p className={`status-msg ${message.type}`}>
-          {message.text}
-        </p>
+        <p className={`status-msg ${message.type}`}>{message.text}</p>
       )}
     </header>
   );

@@ -6,10 +6,17 @@ import Player from "./components/Player";
 import TrackList from "./components/TrackList";
 import ReloadPrompt from "./components/ReloadPrompt";
 import SideMenu from "./components/SideMenu";
-import BottomSheet from "./components/BottomSheet"; // Import the new component
-import { getState, saveState, getTracks, saveTracks, deleteTrack } from "./utils/db";
+import BottomSheet from "./components/BottomSheet";
+import CreatePlaylistModal from "./components/CreatePlaylistModal";
+import AddToPlaylistModal from "./components/AddToPlaylistModal";
+import { 
+  saveState, loadState, getAllTracks, saveTrack, deleteTrack,
+  saveWishlist, loadWishlist, saveFavorites, loadFavorites,
+  saveRecentlyPlayed, loadRecentlyPlayed
+} from "./utils/db.js";
 
-const generateUniqueId = () => `track_${Date.now()}_${Math.random()}`;
+const generateUniqueId = () => `track_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
+const generatePlaylistId = () => `playlist_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
 const DELETED_DEFAULTS_KEY = 'deletedDefaultIds';
 
 export default function App() {
@@ -26,81 +33,125 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-
-  // New state for the bottom sheet menu
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedTrackForMenu, setSelectedTrackForMenu] = useState(null);
+  
+  // Feature States
+  const [favorites, setFavorites] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [recentlyPlayed, setRecentlyPlayed] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+  const [currentView, setCurrentView] = useState('all');
+  
+  // Modal States
+  const [isCreatePlaylistModalOpen, setIsCreatePlaylistModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
 
+  // Restore saved state once on startup and validate IDs
   useEffect(() => {
     async function restore() {
       try {
         const deletedIds = JSON.parse(localStorage.getItem(DELETED_DEFAULTS_KEY)) || [];
         const activeDefaultTracks = defaultTracks.filter(track => !deletedIds.includes(track.id));
-        const savedTracks = await getTracks();
+        const savedTracks = await getAllTracks();
         const combinedTracks = [...activeDefaultTracks, ...savedTracks];
+
         if (combinedTracks.length) {
           setTracks(combinedTracks);
           setQueue(combinedTracks);
         }
-        const savedIndex = await getState("currentIndex");
-        const savedPlaying = await getState("isPlaying");
-        if (savedIndex !== undefined && savedIndex < combinedTracks.length)
+
+        const savedIndex = await loadState("currentIndex");
+        if (savedIndex !== null && Number.isFinite(savedIndex) && savedIndex < combinedTracks.length) {
           setCurrentIndex(savedIndex);
-        if (savedPlaying !== undefined) setIsPlaying(savedPlaying);
+        } else if (combinedTracks.length > 0) {
+          setCurrentIndex(0);
+        } else {
+          setCurrentIndex(-1);
+        }
+
+        const playingState = await loadState("isPlaying");
+        setIsPlaying(!!playingState);
+
+        // Validate IDs
+        const existingIds = new Set(combinedTracks.map(t => t.id));
+
+        // Load from IndexedDB
+        const wl = await loadWishlist();
+        setWishlist((wl || []).filter(id => existingIds.has(id)));
+
+        const fav = await loadFavorites();
+        setFavorites((fav || []).filter(id => existingIds.has(id)));
+
+        const rec = await loadRecentlyPlayed();
+        setRecentlyPlayed((rec || []).filter(id => existingIds.has(id)));
+
+        const savedPlaylists = (await loadState('playlists')) || [];
+        const validatedPlaylists = (savedPlaylists || []).map(pl => ({
+          ...pl,
+          trackIds: (pl.trackIds || []).filter(id => existingIds.has(id))
+        }));
+        setPlaylists(validatedPlaylists);
+
       } catch (err) {
-        console.warn("⚠️ Error restoring state:", err);
+        console.error("Restore error:", err);
+        setTracks(defaultTracks);
+        setQueue(defaultTracks);
+        setFavorites([]);
+        setWishlist([]);
+        setRecentlyPlayed([]);
+        setPlaylists([]);
       }
     }
     restore();
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      saveState("currentIndex", currentIndex);
-      saveState("isPlaying", isPlaying);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [currentIndex, isPlaying]);
+  // Persist small pieces of state when they update
+  useEffect(() => { saveState("currentIndex", currentIndex); }, [currentIndex]);
+  useEffect(() => { saveState("isPlaying", isPlaying); }, [isPlaying]);
+
+  // Persist favorites, wishlist, recentlyPlayed into IndexedDB
+  useEffect(() => { saveFavorites(favorites); }, [favorites]);
+  useEffect(() => { saveWishlist(wishlist); }, [wishlist]);
+  useEffect(() => { saveRecentlyPlayed(recentlyPlayed); }, [recentlyPlayed]);
+
+  useEffect(() => { saveState('playlists', playlists); }, [playlists]);
 
   useEffect(() => {
-    if (currentIndex >= queue.length && queue.length > 0) {
-      setCurrentIndex(0);
+    if (isPlaying && currentIndex > -1 && queue[currentIndex]) {
+      const currentTrackId = queue[currentIndex].id;
+      setRecentlyPlayed(prev => {
+        const arr = [currentTrackId, ...prev.filter(id => id !== currentTrackId)];
+        return arr.slice(0, 50);
+      });
     }
-  }, [queue, currentIndex]);
+  }, [isPlaying, currentIndex, queue]);
 
   const playNext = useCallback(() => {
     setCurrentIndex(prev => (prev + 1 < queue.length ? prev + 1 : isLooping ? 0 : prev));
     setIsPlaying(true);
-  }, [queue, isLooping]);
+  }, [queue.length, isLooping]);
 
   const playPrev = useCallback(() => {
     setCurrentIndex(prev => (prev - 1 >= 0 ? prev - 1 : isLooping ? queue.length - 1 : prev));
     setIsPlaying(true);
-  }, [queue, isLooping]);
+  }, [queue.length, isLooping]);
 
-  const toggleLoop = () => setIsLooping(prev => !prev);
-  const togglePlay = () => setIsPlaying(prev => !prev);
+  const toggleLoop = () => setIsLooping(p => !p);
+  const togglePlay = () => setIsPlaying(p => !p);
 
-  const handleSeek = (e) => {
-    const newTime = Number(e.target.value);
-    setCurrentTime(newTime);
-    const audioEl = document.querySelector("audio");
-    if (audioEl) audioEl.currentTime = newTime;
-  };
-
-  const fileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 
   const handleFiles = async (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
     const filesToAdd = files.filter(file => !tracks.some(track => track.name === file.name));
     if (files.length > 0 && filesToAdd.length === 0) {
-      setMessage({ text: "That song is already in your playlist.", type: 'delete' });
+      setMessage({ text: "Song already exists.", type: 'delete' });
       setTimeout(() => setMessage(null), 3000);
       return;
     }
@@ -115,125 +166,147 @@ export default function App() {
     if (validTracks.length) {
       setTracks(prev => [...prev, ...validTracks]);
       setQueue(prev => [...prev, ...validTracks]);
-      await saveTracks(validTracks);
-      setMessage({ text: `${validTracks.length} file(s) added ✅`, type: 'success' });
+      for (const track of validTracks) {
+        await saveTrack(track);
+      }
+      setMessage({ text: `${validTracks.length} song(s) added.`, type: 'success' });
       setTimeout(() => setMessage(null), 3000);
     }
+    e.target.value = "";
   };
 
+  const getDisplayedTracks = () => {
+    let list;
+    if (typeof currentView === 'string' && currentView.startsWith('playlist_')) {
+      const playlistId = currentView;
+      const playlist = playlists.find(p => p.id === playlistId);
+      list = playlist ? playlist.trackIds.map(id => tracks.find(t => t.id === id)).filter(Boolean) : [];
+    } else {
+      switch (currentView) {
+        case 'favorites': list = tracks.filter(t => favorites.includes(t.id)); break;
+        case 'wishlist': list = tracks.filter(t => wishlist.includes(t.id)); break;
+        case 'recent': list = recentlyPlayed.map(id => tracks.find(t => t.id === id)).filter(Boolean); break;
+        default: list = queue;
+      }
+    }
+    return list.filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  };
+  const displayedTracks = getDisplayedTracks();
+
+  const handleSelectAll = () => setSelectedTracks(p => p.length === displayedTracks.length ? [] : displayedTracks.map(t => t.id));
   const toggleSelectMode = () => {
-    setIsSelectMode(!isSelectMode);
+    setIsSelectMode(p => !p);
     setSelectedTracks([]);
   };
+  const handleSelectTrack = (trackId) => setSelectedTracks(p => p.includes(trackId) ? p.filter(id => id !== trackId) : [...p, trackId]);
 
-  const handleSelectTrack = (trackId) => {
-    setSelectedTracks(prevSelected =>
-      prevSelected.includes(trackId)
-        ? prevSelected.filter(id => id !== trackId)
-        : [...prevSelected, trackId]
-    );
-  };
+  const removeTracksById = async (idsToRemove) => {
+    if (idsToRemove.includes(queue[currentIndex]?.id)) setIsPlaying(false);
+    const tracksToDelete = tracks.filter(t => idsToRemove.includes(t.id));
+    const defaultTracksToDelete = tracksToDelete.filter(t => t.id.startsWith('default-'));
+    const userTracksToDelete = tracksToDelete.filter(t => !t.id.startsWith('default-'));
+    
+    setQueue(p => p.filter(t => !idsToRemove.includes(t.id)));
+    setTracks(p => p.filter(t => !idsToRemove.includes(t.id)));
 
-  const handleSelectAll = () => {
-    if (selectedTracks.length === filteredTracks.length) {
-      setSelectedTracks([]);
-    } else {
-      setSelectedTracks(filteredTracks.map(track => track.id));
+    if (defaultTracksToDelete.length > 0) {
+      const deletedIds = JSON.parse(localStorage.getItem(DELETED_DEFAULTS_KEY)) || [];
+      const newDeletedIds = [...new Set([...deletedIds, ...defaultTracksToDelete.map(t => t.id)])];
+      localStorage.setItem(DELETED_DEFAULTS_KEY, JSON.stringify(newDeletedIds));
+    }
+    if (userTracksToDelete.length > 0) {
+      for (const track of userTracksToDelete) {
+        try { await deleteTrack(track.id); } 
+        catch (err) { console.error("DB delete error:", err); }
+      }
     }
   };
 
   const handleMultipleDelete = async () => {
     if (selectedTracks.length === 0) return;
-    const currentTrackId = queue[currentIndex]?.id;
-    if (selectedTracks.includes(currentTrackId)) {
-      setIsPlaying(false);
-    }
-    const tracksToDelete = queue.filter(track => selectedTracks.includes(track.id));
-    const defaultTracksToDelete = tracksToDelete.filter(t => t.id.startsWith('default-'));
-    const userTracksToDelete = tracksToDelete.filter(t => !t.id.startsWith('default-'));
-    const newQueue = queue.filter(track => !selectedTracks.includes(track.id));
-    setQueue(newQueue);
-    setTracks(newQueue);
-    if (defaultTracksToDelete.length > 0) {
-      const deletedIds = JSON.parse(localStorage.getItem(DELETED_DEFAULTS_KEY)) || [];
-      const newDeletedIds = [...deletedIds, ...defaultTracksToDelete.map(t => t.id)];
-      localStorage.setItem(DELETED_DEFAULTS_KEY, JSON.stringify(newDeletedIds));
-    }
-    if (userTracksToDelete.length > 0) {
-      for (const track of userTracksToDelete) {
-        try {
-          await deleteTrack(track.id);
-        } catch (err) {
-          console.error("Failed to delete track from DB:", err);
-        }
-      }
-    }
+    await removeTracksById(selectedTracks);
     setMessage({ text: `${selectedTracks.length} song(s) deleted.`, type: 'delete' });
     setTimeout(() => setMessage(null), 3000);
     setIsSelectMode(false);
     setSelectedTracks([]);
   };
-  
-  // New function for single track deletion from bottom sheet
+
   const handleSingleDelete = async (trackToDelete) => {
     if (!trackToDelete) return;
-    if (queue[currentIndex]?.id === trackToDelete.id) {
-      setIsPlaying(false);
-    }
-    const newQueue = queue.filter(track => track.id !== trackToDelete.id);
-    setQueue(newQueue);
-    setTracks(newQueue);
-
-    if (trackToDelete.id.startsWith('default-')) {
-      const deletedIds = JSON.parse(localStorage.getItem(DELETED_DEFAULTS_KEY)) || [];
-      const newDeletedIds = [...deletedIds, trackToDelete.id];
-      localStorage.setItem(DELETED_DEFAULTS_KEY, JSON.stringify(newDeletedIds));
+    if (typeof currentView === 'string' && currentView.startsWith('playlist_')) {
+      const playlistId = currentView;
+      setPlaylists(p => p.map(pl => pl.id === playlistId ? { ...pl, trackIds: pl.trackIds.filter(id => id !== trackToDelete.id) } : pl));
+      setMessage({ text: `Removed from playlist.`, type: 'delete' });
     } else {
-      try {
-        await deleteTrack(trackToDelete.id);
-      } catch (err) {
-        console.error("Failed to delete track from DB:", err);
-      }
+      await removeTracksById([trackToDelete.id]);
+      setMessage({ text: 'Deleted.', type: 'delete' });
     }
-    setMessage({ text: 'Deleted.', type: 'delete' });
     setTimeout(() => setMessage(null), 3000);
   };
 
-  // New functions to open and close the bottom sheet
-  const openSheetForTrack = (track) => {
-    setSelectedTrackForMenu(track);
-    setIsSheetOpen(true);
+  const openSheetForTrack = (track) => { setSelectedTrackForMenu(track); setIsSheetOpen(true); };
+  const closeSheet = () => setIsSheetOpen(false);
+  const toggleFavorite = (trackId) => setFavorites(p => p.includes(trackId) ? p.filter(id => id !== trackId) : [trackId, ...p]);
+  const toggleWishlist = (trackId) => setWishlist(p => p.includes(trackId) ? p.filter(id => id !== trackId) : [trackId, ...p]);
+  const handleNavigate = (view) => { setCurrentView(view); setIsMenuOpen(false); };
+  
+  const handleCreatePlaylist = (name) => {
+    const newPlaylist = { id: generatePlaylistId(), name, trackIds: [] };
+    setPlaylists(p => [...p, newPlaylist]);
+    setIsCreatePlaylistModalOpen(false);
   };
-
-  const closeSheet = () => {
-    setIsSheetOpen(false);
-    setSelectedTrackForMenu(null);
+  
+  const handleDeletePlaylist = (playlistId) => {
+    if (window.confirm("Are you sure you want to delete this playlist?")) {
+      setPlaylists(p => p.filter(pl => pl.id !== playlistId));
+      if (currentView === playlistId) setCurrentView('all');
+    }
   };
-
-  const filteredTracks = queue.filter(track =>
-    track.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  
+  const addTrackToPlaylist = (playlistId) => {
+    if (!selectedTrackForMenu) return;
+    const trackId = selectedTrackForMenu.id;
+    setPlaylists(p => p.map(pl => pl.id === playlistId && !pl.trackIds.includes(trackId) ? { ...pl, trackIds: [trackId, ...pl.trackIds] } : pl));
+    setMessage({ text: `Added to playlist.`, type: 'success' });
+    setTimeout(() => setMessage(null), 2000);
+    setIsAddToPlaylistModalOpen(false);
+  };
 
   return (
     <div className="main-parent">
       <input type="file" id="file-upload" accept="audio/*" multiple onChange={handleFiles} className="file-input" />
-      <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onSelectMode={toggleSelectMode} />
+      <SideMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        onSelectMode={toggleSelectMode}
+        onNavigate={handleNavigate}
+        playlists={playlists}
+        onCreatePlaylist={() => setIsCreatePlaylistModalOpen(true)}
+        onDeletePlaylist={handleDeletePlaylist}
+      />
+      <CreatePlaylistModal 
+        isOpen={isCreatePlaylistModalOpen}
+        onClose={() => setIsCreatePlaylistModalOpen(false)}
+        onCreate={handleCreatePlaylist}
+      />
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        playlists={playlists}
+        onSelectPlaylist={addTrackToPlaylist}
+      />
       <div className="sub-container">
         <Header
-          message={message}
-          onMenuClick={() => setIsMenuOpen(true)}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          isSelectMode={isSelectMode}
-          toggleSelectMode={toggleSelectMode}
-          onDeleteSelected={handleMultipleDelete}
-          onSelectAll={handleSelectAll}
-          selectedCount={selectedTracks.length}
-          isSearchVisible={isSearchVisible}
-          setIsSearchVisible={setIsSearchVisible}
+          message={message} onMenuClick={() => setIsMenuOpen(true)}
+          searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+          isSelectMode={isSelectMode} toggleSelectMode={toggleSelectMode}
+          onDeleteSelected={handleMultipleDelete} onSelectAll={handleSelectAll}
+          selectedCount={selectedTracks.length} isSearchVisible={isSearchVisible}
+          setIsSearchVisible={setIsSearchVisible} currentView={currentView} playlists={playlists}
         />
-        {queue.length > 0 && queue[currentIndex] && (
+        {queue.length > 0 && currentIndex > -1 && queue[currentIndex] && (
           <Player
+            key={queue[currentIndex].id}
             track={queue[currentIndex]}
             isPlaying={isPlaying}
             onNext={playNext}
@@ -241,18 +314,17 @@ export default function App() {
             togglePlay={togglePlay}
             currentTime={currentTime}
             duration={duration}
-            onSeek={handleSeek}
-            setDuration={setDuration}
             setCurrentTime={setCurrentTime}
+            setDuration={setDuration}
             onLoop={toggleLoop}
             isLooping={isLooping}
           />
         )}
         <TrackList
-          tracks={filteredTracks}
-          currentIndex={currentIndex}
+          tracks={displayedTracks}
+          currentIndex={queue.findIndex(t => t?.id === (queue[currentIndex]?.id))}
           onPlayTrack={(i) => {
-            const trackToPlay = filteredTracks[i];
+            const trackToPlay = displayedTracks[i];
             const originalIndex = queue.findIndex(t => t.id === trackToPlay.id);
             if (originalIndex !== -1) {
               setCurrentIndex(originalIndex);
@@ -262,15 +334,21 @@ export default function App() {
           isSelectMode={isSelectMode}
           selectedTracks={selectedTracks}
           onSelectTrack={handleSelectTrack}
-          onOpenSheet={openSheetForTrack} // Pass the function to open the sheet
+          onOpenSheet={openSheetForTrack}
         />
       </div>
       <ReloadPrompt currentIndex={currentIndex} queue={queue} isPlaying={isPlaying} />
-      <BottomSheet 
+      <BottomSheet
         isOpen={isSheetOpen}
         onClose={closeSheet}
         track={selectedTrackForMenu}
         onDelete={handleSingleDelete}
+        onToggleFavorite={toggleFavorite}
+        onToggleWishlist={toggleWishlist}
+        isFavorite={favorites.includes(selectedTrackForMenu?.id)}
+        isWishlisted={wishlist.includes(selectedTrackForMenu?.id)}
+        onAddToPlaylist={() => { setIsAddToPlaylistModalOpen(true); closeSheet(); }}
+        currentView={currentView}
       />
     </div>
   );

@@ -1,15 +1,15 @@
 import React from "react";
+import '../index.css';
 
 export default function TrackList({
   tracks,
   currentIndex,
   onPlayTrack,
   isSelectMode,
-  selectedTracks,
+  selectedTracks = [],
   onSelectTrack,
-  onOpenSheet // New prop to open the bottom sheet
+  onOpenSheet
 }) {
-  
   const handleClick = (track, index) => {
     if (isSelectMode) {
       onSelectTrack(track.id);
@@ -21,13 +21,14 @@ export default function TrackList({
   return (
     <div className="track-list">
       {tracks.map((track, i) => {
-        const isSelected = selectedTracks.includes(track.id);
+        const isSelected = Array.isArray(selectedTracks) && selectedTracks.includes(track.id);
+
         return (
           <div
             key={track.id || track.name + i}
             className={`
               track-item-list 
-              ${i === currentIndex && !isSelectMode ? "active" : ""}
+              ${currentIndex === i && !isSelectMode ? "active" : ""}
               ${isSelectMode ? "selectable" : ""}
               ${isSelected ? "selected" : ""}
             `}
@@ -39,10 +40,9 @@ export default function TrackList({
               </div>
             )}
             <span className="track-name">{track.name}</span>
-            {/* Show dots button only when not in select mode */}
             {!isSelectMode && (
               <button className="dots-btn" onClick={(e) => {
-                  e.stopPropagation(); // Prevent track from playing
+                  e.stopPropagation();
                   onOpenSheet(track);
                 }}>
                 <span></span>
