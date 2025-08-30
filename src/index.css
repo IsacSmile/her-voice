@@ -28,7 +28,9 @@ body {
   display: block;
   max-width: 430px;
   min-height: 100vh;
-  background: url("./assets/images/gebli.jpg") no-repeat center center;
+  /* background: url("./assets/images/giphy.gif") no-repeat center center; */
+  background: url("https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGR2aG1jOGZiaG8yeTBldDB5OWluenVtajQzamkwc2U2enljam05ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fYYWa1Sqg3mWUkbhRx/giphy.gif") no-repeat center center;
+
   background-size: cover;
   background-attachment: fixed;
   opacity: 0.9;
