@@ -24,8 +24,8 @@ def twaManifest = [
     applicationId: 'app.vercel.her_voice_beta.twa',
     hostName: 'her-voice-beta.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
-    name: 'HerVoice💞', // The application name.
-    launcherName: 'HerVocie💞', // The name shown on the Android Launcher.
+    name: 'Her voice💞', // The application name.
+    launcherName: 'HerVoice💞', // The name shown on the Android Launcher.
     themeColor: '#FF4F81', // The color used for the status bar.
     themeColorDark: '#000000', // The color used for the dark status bar.
     navigationColor: '#000000', // The color used for the navigation bar.
