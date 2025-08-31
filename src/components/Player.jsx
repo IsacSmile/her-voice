@@ -1,5 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import "../index.css";
+import { FaPlay } from "react-icons/fa";
+import { FaPause } from "react-icons/fa";
+import { BiSkipPrevious } from "react-icons/bi";
+import { BiSkipNext } from "react-icons/bi";
+import { MdRepeatOn } from "react-icons/md";
+import { MdRepeatOneOn } from "react-icons/md";
+
 
 const Loader = () => (
   <div className="loader-container">
@@ -160,17 +167,38 @@ export default function Player({
       </div>
 
       <div className="controler" style={{ marginTop: 10 }}>
-        <button onClick={onPrev}>⏮️</button>
-        <button onClick={togglePlay}>{isPlaying ? "⏸️" : "▶️"}</button>
-        <button onClick={onNext}>⏭️</button>
-        <button
-          onClick={onLoop}
-          className={`loop-btn ${isLooping ? "active" : ""}`}
-          title="Toggle Loop"
-        >
-          {isLooping ? "🔂" : "🔁"}
-        </button>
-      </div>
+      <button onClick={onPrev}>
+        <BiSkipPrevious className="react-icon-btn" size={45} />
+      </button>
+
+      <button onClick={togglePlay}>
+        {isPlaying ? (
+          <FaPause className="react-icon-btn" size={24} />
+        ) : (
+          <FaPlay className="react-icon-btn" size={24} />
+        )}
+      </button>
+
+      <button onClick={onNext}>
+        <BiSkipNext className="react-icon-btn" size={45} />
+      </button>
+
+      <button
+        onClick={onLoop}
+        className={`loop-btn ${isLooping ? "active" : ""}`}
+        title="Toggle Loop"
+      >
+        {isLooping ? (
+          <MdRepeatOneOn className="react-icon-btn" size={24} />
+
+        ) : (
+          <MdRepeatOn className="react-icon-btn" size={24} />
+        )}
+      </button>
+    </div>
+
+
     </div>
   );
 }
+
