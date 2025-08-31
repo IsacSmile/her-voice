@@ -1,0 +1,21 @@
+{
+  "name": "HerVoice💞",
+  "short_name": "HerVoice",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FF4F81",
+  "theme_color": "#FF4F81",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
