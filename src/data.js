@@ -26,6 +26,7 @@ export const defaultTracks = [
   { id: "default-024", name: "Agency - Talha Anjum", url: "/track/Agency - Talha Anjum.mp3" },
   { id: "default-025", name: "Pehle Bhi Main", url: "/track/Pehle Bhi Main (Slowed  Reverb) .mp3" },
   { id: "default-026", name: "Thenkizhakku - Tamil Version", url: "/track/Thenkizhakku - Tamil Song.mp3" },
-  { id: "default-027", name: "Wishlist -DinoJames", url: "/track/Wishlist-DinoJames.mp3" },
+  { id: "default-027", name: "skechers", url: "/track/skechers.mp3" },
+
 
 ];
