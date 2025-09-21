@@ -28,7 +28,7 @@ body {
   display: block;
   max-width: 430px;
   min-height: 100vh;
-  background: url("./assets/images/giphy.gif") no-repeat center center;
+  background: url("./assets/images/background_2.jpg") no-repeat center center;
 
   background-size: cover;
   background-attachment: fixed;
