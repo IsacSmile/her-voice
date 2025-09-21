@@ -48,7 +48,7 @@ export default function ReloadPrompt({ currentIndex, queue, isPlaying } = {}) {
 
   return (
     <div className="reload-overlay">
-      <div className="reload-prompt">
+      {/* <div className="reload-prompt">
         <span className="reload-text">A new version is available</span>
         <div className="reload-buttons">
           <button className="reload-btn" onClick={handleUpdate}>
@@ -58,7 +58,7 @@ export default function ReloadPrompt({ currentIndex, queue, isPlaying } = {}) {
             Later
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
