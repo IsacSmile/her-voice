@@ -20,6 +20,8 @@ body {
   -webkit-user-select: none;
   user-select: none;
   background-color: black;
+    overflow-y: auto;
+
 }
 
 /* --- Main Layout --- */
