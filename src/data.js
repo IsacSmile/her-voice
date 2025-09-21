@@ -14,7 +14,7 @@ export const defaultTracks = [
   { id: "default-012", name: "HASEEN", url: "/track/HASEEN - TALWIINDER.mp3" },
   { id: "default-013", name: "Slow Dancing In The Dark", url: "/track/Joji - Slow Dancing In The Dark.mp3" },
   { id: "default-014", name: "Pal Pal", url: "/track/Pal Pal.mp3" },
-  { id: "default-015", name: "SHOR", url: "/track/SHOR-TalhaAnjummp3" },
+  { id: "default-015", name: "SHOR", url: "/track/SHOR-TalhaAnjum.mp3" },
   { id: "default-016", name: "kalandar Munawwar Faruqui", url: "/track/Kalandar (feat. Farhan Khan).mp4" },
   { id: "default-017", name: "aleemrk - Cold Hours", url: "/track/aleemrk - Cold Hours (Lyrics).mp3" },
   { id: "default-018", name: "AUR - Tu hai Kaha", url: "/track/AUR - Tu hai kahan.mp3" },
@@ -27,6 +27,7 @@ export const defaultTracks = [
   { id: "default-025", name: "Pehle Bhi Main", url: "/track/Pehle Bhi Main (Slowed  Reverb) .mp3" },
   { id: "default-026", name: "Thenkizhakku - Tamil Version", url: "/track/Thenkizhakku - Tamil Song.mp3" },
   { id: "default-027", name: "skechers", url: "/track/skechers.mp3" },
+  
 
 
 ];
