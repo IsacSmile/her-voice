@@ -135,7 +135,7 @@ export default function Player({
                 textLength="360"
                 lengthAdjust="spacingAndGlyphs"
               >
-                HerVoice
+                BeHappy
               </text>
             </clipPath>
           </defs>
@@ -151,7 +151,7 @@ export default function Player({
             fill="#f8f8f8"
             style={{ filter: "drop-shadow(0 0 6px rgba(0,0,0,0.25))" }}
           >
-            HerVoice
+            BeHappy
           </text>
           <rect
             x="20"

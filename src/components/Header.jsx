@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import '../index.css';
+import { IoSearch } from "react-icons/io5";
 
 export default function Header({
   message,
@@ -28,7 +29,7 @@ export default function Header({
       case 'favorites': return 'Favorites';
       case 'wishlist': return 'Wishlist';
       case 'recent': return 'Recently Played';
-      default: return 'Her_Voicee 💞';
+      default: return 'Be Happy 💞';
     }
   };
 
@@ -37,14 +38,15 @@ export default function Header({
       <div className="header-top-row">
         <button onClick={onMenuClick} className="hamburger-btn">☰</button>
         <h2 className="tittle">{getTitle(currentView)}</h2>
-        <button onClick={() => setIsSearchVisible(true)} className="search-icon-btn">🔍</button>
+        <button onClick={() => setIsSearchVisible(true)} className="search-icon-btn"><IoSearch />
+</button>
 
         <div className={`search-overlay ${isSearchVisible ? 'visible' : ''}`}>
           <input
             ref={searchInputRef}
             type="text"
             className="search-input-expanded"
-            placeholder="Search songs..."
+            placeholder="Search only local songs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

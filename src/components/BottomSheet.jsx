@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../index.css';
 
+
 export default function BottomSheet({
   isOpen,
   onClose,
@@ -49,7 +50,7 @@ export default function BottomSheet({
             {isWishlisted ? '🌟 Remove from Wishlist' : '☆ Add to Wishlist'}
           </button>
           <button className="sheet-button delete" onClick={handleDeleteClick}>
-            {currentView.startsWith('playlist_') ? '🗑️ Remove from Playlist' : '🗑️ Delete Song'}
+            {currentView.startsWith('playlist_') ? '🗑️ Remove from Playlist' : '<RiDeleteBin5Line /> Delete Song'}
           </button>
           <button className="sheet-button close" onClick={onClose}>Close</button>
         </div>
